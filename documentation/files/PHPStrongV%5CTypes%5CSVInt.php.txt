@@ -1,0 +1,105 @@
+<?php
+/*******************************************************************************
+ * COPYRIGHT (c) 2014 Panagiotis Anastasiadis
+ * THIS FILE IS PART OF PHPStrongV.
+ * PROVIDED UNDER THE TERMS AND CONDITIONS DESCRIBED IN LICENSE.md
+ *******************************************************************************
+ */
+
+namespace PHPStrongV\Types;
+use PHPStrongV as f;
+use PHPStrongV\Types\SVNumber as SVNumber;
+use PHPStrongV\Helpers\PHPStrongVManager as PHPStrongVManager;
+
+class SVInt extends SVNumber
+{
+    /**
+     * @ignore
+     */
+    const CLASS_NAME = 'PHPStrongV\Types\SVInt';
+
+    /**
+     * @ignore
+     */
+    protected static $MIN_VALUE = -2147483648;
+
+    /**
+     * (2^32)/2 - 1 (containing 0)
+     * @ignore
+     */
+    protected static $MAX_VALUE = 2147483647;
+
+    /**
+     * Sets $value as the new value and returns the updated instance.
+     * @param integer|SVInt|SVInt32 $value
+     */
+    public function set ($value) {
+        if ($value instanceof self) {
+            $val = $value->val();
+            if ($val >= static::$MIN_VALUE && $val <= static::$MAX_VALUE)
+                $this->value = $val;
+            else
+                throw new Exception('Value is out of bounds');
+        }
+        else if (static::isValid($value))
+            $this->value = $value;
+        else
+            throw new Exception (
+                'Value is not an integer or value is out of bounds');
+
+        return $this;
+    }
+
+
+    public static function minValue() {
+        return static::$MIN_VALUE;
+    }
+
+    public static function maxValue() {
+        return static::$MAX_VALUE;
+    }
+
+
+    /**
+     * Parses the supplied value to check if a 32 bit signed integer and returns
+     * a new SVInt.
+     * @param  mixed $value
+     * @throws Exception if the supplied value is not a signed 32 bit integer.
+     */
+    public static function &parse ($value) {
+        if (is_numeric($value) &&
+            $value >= static::$MIN_VALUE &&
+            $value <= static::$MAX_VALUE) {
+            $factoryMethod = get_called_class();
+            //$class = strtolower(end(explode('\\', $factoryMethod)));
+            //$factoryMethod = strtolower(get_called_class());
+            //$class = 'PHPStrongV\\' . $class;
+
+            // Make the string number a normal number
+            //echo $factoryMethod;
+            //return $factoryMethod(0 + $value);
+            $r = new $factoryMethod(0 + $value);
+            return PHPStrongVManager::getNewPointer($r);
+        }
+        else {
+            throw new Exception (
+                'Value cannot be casted to integer or value is out of bounds');
+        }
+    }
+
+
+    /**
+     * Checks if the supplied value if a signed 32 bit integer.
+     * @param  mixed $value
+     */
+    public static function isValid($value) {
+        $type = gettype($value);
+        $isNum = ($type === 'integer' || $type === 'double');
+        if ($isNum &&
+            $value >= static::$MIN_VALUE &&
+            $value <= static::$MAX_VALUE)
+            return true;
+        else
+            return false;
+    }
+}

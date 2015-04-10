@@ -1,0 +1,89 @@
+<?php
+/*******************************************************************************
+ * COPYRIGHT (c) 2015 Panagiotis Anastasiadis
+ * https://twitter.com/panastas91
+ * https://www.linkedin.com/in/panastasiadis
+ *
+ * THIS FILE IS PART OF PHPStrongV.
+ * PROVIDED UNDER THE TERMS AND CONDITIONS DESCRIBED IN LICENSE.md
+ *******************************************************************************
+ */
+
+namespace PHPStrongV\Types;
+use PHPStrongV\Base\SVScalar as SVScalar;
+
+class SVBool extends SVScalar
+{
+    /**
+     * @ignore
+     */
+    const CLASS_NAME = 'PHPStrongV\Types\SVBool';
+
+    /**
+     * Sets $value as the new value of the instance and returns the updated
+     * instance.
+     * @param boolean|SVBool $value
+     * @throws Exception if the supplied value if not boolean or an SVBool
+     * @return SVBool
+     * @example svbool-set.php
+     */
+    public function &set ($value) {
+        if ($value instanceof static)
+            $this->value = $value->val();
+        else if (static::isValid($value))
+            $this->value = $value;
+        else
+            throw new Exception (
+                $this->formatTypeException($value, 'SVBool/True/False'));
+
+        return $this;
+    }
+
+
+    /**
+     * Parses the supplied value to check if it can be casted to boolean type
+     * and returns a new SVBool.
+     * For more information see
+     * http://php.net/manual/en/language.types.type-juggling.php
+     * @param  mixed $value
+     * @return SVBool
+     * @throws Exception if the supplied value if not a truthy value.
+     */
+    public static function &parse ($value) {
+        if (gettype((bool)$value) === 'boolean') {
+            return svbool((bool)$value);
+        }
+        else {
+            throw new Exception (
+                $this->formatTypeException($value, 'SVBool/True/False'));
+        }
+    }
+
+
+    /**
+     * Checks if the supplied value is boolean (true/false)
+     * @param mixed $value
+     * @return boolean
+     */
+    public static function isValid($value) {
+        if (($value === true || $value === false))
+            return true;
+        else
+            return false;
+    }
+
+
+    /**
+     * Checks if the supplied value can be casted to boolean type.
+     * For more information see
+     * http://php.net/manual/en/language.types.type-juggling.php
+     * @param mixed $value
+     * @return boolean
+     */
+    public static function isCompatible($value) {
+        if (gettype((bool)$value) === 'boolean')
+            return true;
+        else
+            return false;
+    }
+}

@@ -1,0 +1,75 @@
+<?php
+/*******************************************************************************
+ * COPYRIGHT (c) 2014 Panagiotis Anastasiadis
+ * THIS FILE IS PART OF PHPStrongV.
+ * PROVIDED UNDER THE TERMS AND CONDITIONS DESCRIBED IN LICENSE.md
+ *******************************************************************************
+ */
+
+namespace PHPStrongV\Types;
+use PHPStrongV\Base\SVScalar as SVScalar;
+
+class SVNumber extends SVScalar
+{
+    /**
+     * @ignore
+     */
+    const CLASS_NAME = 'PHPStrongV\Types\SVNumber';
+
+    /**
+     * Sets $value as the new value and returns the updated instance.
+     * @param mixed $value
+     */
+    public function set ($value) {
+        if ($value instanceof self) {
+            $val = $value->val();
+            if ($val >= static::$MIN_VALUE && $val <= static::$MAX_VALUE)
+                $this->value = $val;
+            else
+                throw new Exception('Value is out of bounds');
+        }
+        else if (static::isValid($value))
+            $this->value = $value;
+        else
+            throw new Exception('Value is not a number');
+
+        return $this;
+    }
+
+
+    /**
+     * Returns if the supplied $value can be casted to a numeric value.
+     * @param  mixed $value
+     * @return boolean
+     */
+    public static function isNumeric($value) {
+        return is_numeric($value);
+    }
+
+
+    /**
+     * Parses $value and if numeric, creates and returns a new SVNumber.
+     * Otherwise returns false.
+     * @param  [type] $value [description]
+     * @return [type]        [description]
+     */
+    public static function &parse ($value) {
+        if (is_numeric($value))
+            return svnumber(0 + $value);
+        else
+            return false;
+    }
+
+
+    /**
+     * Checks if $value is a valid integer or double
+     * @param integer|double $value
+     * @return boolean
+     */
+    public static function isValid($value) {
+        $type = gettype($value);
+        $isNum = ($type === 'integer' || $type === 'double');
+        return $isNum;
+    }
+
+}
